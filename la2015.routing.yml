@@ -1,0 +1,7 @@
+#Example routing entry
+#gs_revform:
+#  path: /revform
+#  defaults:
+#    _form: \Drupal\gs\Form\ReverseForm
+#  requirements:
+#    _permission: 'access content'

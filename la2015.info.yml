@@ -1,0 +1,5 @@
+name: la2015
+description: Demo code of my talk on customizing Drupal 8 migration
+core: 8.x
+type: module
+package: migrate
