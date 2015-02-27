@@ -1,6 +1,6 @@
 <?php
 
-function gs_menu(){
+function la2015_menu(){
  //key is the same as the route id in gs.routing.yml
  //note the array only contains information about the menu, not about the routing/permissions/...
  $items = array();
