@@ -11,21 +11,32 @@ namespace Drupal\la2015\Plugin\migrate\source;
 use Drupal\migrate\Entity\MigrationInterface;
 use Drupal\migrate\Plugin\migrate\id_map\Sql;
 use Drupal\migrate\Plugin\MigrateIdMapInterface;
+use Drupal\migrate\Plugin\migrate\source\SourcePluginBase;
 use Drupal\la2015\Plugin\migrate\source\CsvFileIterator;
 
 /**
- * Sources whose data is in a file, eg csv, xml, ...
+ * Sources whose data is in a csv. Later I will refactor the shit out of it.
  */
-abstract class FileBase extends SourcePluginBase {
+ 
+ /**
+ * Nodes from a csv file.
+ *
+ * @MigrateSource(
+ *   id = "migrate_csv"
+ * )
+ */
+class FileBase extends SourcePluginBase {
   
    //the file to read
-  protected $file;
+  private $file;
   //the delimiter between columns
-  protected $delimiter;
+  private $delimiter;
   //does the file contain header?
-  protected $headers;
+  private $headers;
   
-  protected $lines;
+  private $lines;
+  //the columns required to uniquely identify each row in the file
+  private $ids;
 
   /**
    * @var \Drupal\migrate\Entity\MigrationInterface
@@ -37,6 +48,10 @@ abstract class FileBase extends SourcePluginBase {
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, MigrationInterface $migration) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $migration);
+    $this->file = "/Users/pieter-jandrouillon/Documents/drupalsites/d8/modules/dev/la2015/src/test/test.csv";
+    $this->delimiter = ';';
+    $this->ids=array('idnr');
+    $this->readHeaders();
   }
   
   /**
@@ -48,25 +63,34 @@ abstract class FileBase extends SourcePluginBase {
   public function __toString() {
     return (string) $this->file;
   }
-  
-  public function iterator(){
-    if(!isset($this->iterator){
+  public function fields(){
+    return $this->headers;
+  }
+  public function getIds(){
+    return array();
+  }
+  public function count(){
+    return count($this->lines);
+  }
+  public function getIterator(){
+    if(!isset($this->iterator)){
       //read file
-      $iterator = new CsvFileIterator($this->file,$this->delimiter);
+      $iterator = new CsvFileIterator($this->file);
       $this->iterator = $iterator;
     }
     return $this->iterator;
   }
   
   public function readHeaders(){
-    $handle = fopen($this->file, "r");
-    if ($handle) {
-      if (($line = fgets($handle)) !== false) {
-          $this->headers = explode($this->delimiter,$line);
-      }
-
-      fclose($handle);
-    }
+    $this->getIterator();
+    $this->iterator->rewind();
+    $this->headers = $this->iterator->current();
+  }
+  public function readLines(){
+    //skip line with headers
+    $this->iterator->current();
+    //loop over lines
+    
   }
   
 }

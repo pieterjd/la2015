@@ -1,6 +1,7 @@
 <?php
 namespace Drupal\la2015\Plugin\migrate\source;
 use \Iterator;
+use \InvalidArgumentException;
 /**
  * CSV File Iterator
  *
@@ -42,6 +43,11 @@ class CsvFileIterator implements Iterator
      */
     private $_delimiter;
     
+    /**
+    * Headers of the csv file
+    */
+    private $_headers;
+    
 
     /**
      * Create an instance of the CsvFileIterator class.
@@ -52,13 +58,14 @@ class CsvFileIterator implements Iterator
      * @param string $file The CSV file path.
      * @param string $delimiter The default delimeter is a single comma (,)
      */
-    public function __construct($file="/Users/pieter-jandrouillon/Documents/drupalsites/d8/modules/dev/la2015/src/test/test.csv", $delimiter = ';')
+    public function __construct($file, $delimiter = ';')
     {
         if (! file_exists($file))
             throw new InvalidArgumentException("{$file}");
 
         $this->_filePointer = fopen($file, 'rt');
-        $this->_delimiter = $_delimiter;
+        $this->_delimiter = ';';
+        $this->rewind();
     }
 
     /*
@@ -67,7 +74,8 @@ class CsvFileIterator implements Iterator
     public function rewind()
     {
         $this->_rowCounter = 0;
-        rewind($this->_filePointer);
+        print_r("rewinding\n");
+        print_r(rewind($this->_filePointer));
     }
 
     /*
@@ -108,5 +116,8 @@ class CsvFileIterator implements Iterator
             return FALSE;
 
         return TRUE;
+    }
+    public function __toString(){
+      return "delim: ".($this->_delimiter)."\n";
     }
 }
